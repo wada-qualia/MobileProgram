@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Russify</string>
+
+    <!-- Auth Screen -->
+    <string name="login">ВХОД</string>
+    <string name="registration">РЕГИСТРАЦИЯ</string>
+    <string name="username">Имя пользователя</string>
+    <string name="email">Email</string>
+    <string name="password">Пароль</string>
+    <string name="sign_in">ВОЙТИ</string>
+    <string name="create_account">СОЗДАТЬ АККАУНТ</string>
+    <string name="no_account_yet">Ещё нет аккаунта? Зарегистрироваться</string>
+    <string name="have_account">Уже есть аккаунт? Войти</string>
+
+    <!-- Home Screen -->
+    <string name="playing">Играет:</string>
+    <string name="mood_mix">Микс по настроениям</string>
+    <string name="search_hint">Поиск...</string>
+    <string name="mood_vigor">Бодрость</string>
+    <string name="mood_dynamic">Динамика</string>
+    <string name="mood_freshness">Свежесть</string>
+    <string name="mood_joy">Радость</string>
+    <string name="mood_sadness">Грусть</string>
+    <string name="mood_party">Вечеринка</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Главная</string>
+    <string name="nav_favorites">Избранное</string>
+    <string name="nav_settings">Настройки</string>
+    <string name="nav_profile">Профиль</string>
+
+    <!-- Player -->
+    <string name="all_tracks">Все треки</string>
+    <string name="album">Альбом:</string>
+    <string name="playlist">Плейлист:</string>
+    <string name="repeat">Повтор</string>
+    <string name="previous">Назад</string>
+    <string name="play">Воспроизвести</string>
+    <string name="pause">Пауза</string>
+    <string name="next">Вперёд</string>
+    <string name="like">Нравится</string>
+    <string name="no_favorites">Нет избранных треков</string>
+
+    <!-- Mini Player -->
+    <string name="close">Закрыть</string>
+
+    <!-- Playlist Detail -->
+    <string name="back">Назад</string>
+    <string name="album_label">Альбом</string>
+    <string name="playlist_label">Плейлист</string>
+    <string name="listen">Слушать</string>
+
+    <!-- Track Menu -->
+    <string name="add_to_playlist">Добавить в плейлист</string>
+    <string name="play_next">Играть следующим</string>
+    <string name="add_to_queue">Добавить в очередь</string>
+    <string name="tracks_count">треков</string>
+
+    <!-- Dialogs -->
+    <string name="new_playlist">Новый плейлист</string>
+    <string name="playlist_name">Название</string>
+    <string name="create">СОЗДАТЬ</string>
+    <string name="add_to_playlist_title">Добавить в плейлист</string>
+    <string name="cancel">Отмена</string>
+
+    <!-- Profile -->
+    <string name="user">Пользователь</string>
+    <string name="logout">ВЫЙТИ ИЗ АККАУНТА</string>
+
+    <!-- Settings -->
+    <string name="settings">Настройки</string>
+    <string name="language">Язык</string>
+    <string name="russian">Русский</string>
+    <string name="english">English</string>
+    <string name="theme">Тема</string>
+    <string name="dark">Dark</string>
+    <string name="light">Light</string>
+</resources>
