@@ -21,6 +21,7 @@ volumes:
 
 # Shared base configuration
 x-android-build-base: &android-build-base
+  platform: linux/amd64
   build:
     context: .
     dockerfile: Dockerfile

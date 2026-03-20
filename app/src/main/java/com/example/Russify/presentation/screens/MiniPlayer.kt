@@ -39,7 +39,7 @@ fun MiniPlayer(
             .background(Color(0xFF4A2C5A))
     ) {
         LinearProgressIndicator(
-            progress = { 0.4f },
+            progress = { playerState.progressFraction },
             modifier = Modifier.fillMaxWidth().height(2.dp),
             color = SalmonRed,
             trackColor = Color.White.copy(alpha = 0.2f)

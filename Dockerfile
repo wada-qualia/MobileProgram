@@ -3,7 +3,7 @@
 # Optimized multi-stage build for Android app compilation
 # ═══════════════════════════════════════════════════════════════════
 
-# Base image with Java 17 (LTS)
+# Base image with Java 17 for Android SDK tools; Java 11 is installed alongside it for Gradle toolchains
 FROM eclipse-temurin:17-jdk-jammy AS base
 
 # Metadata
@@ -14,6 +14,8 @@ LABEL version="1.0"
 # Environment variables for Android SDK
 ENV ANDROID_SDK_ROOT=/opt/android-sdk
 ENV ANDROID_HOME=/opt/android-sdk
+ENV JAVA11_HOME=/opt/java11
+ENV ORG_GRADLE_JAVA_INSTALLATIONS_PATHS=/opt/java11
 ENV PATH=$PATH:${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin:${ANDROID_SDK_ROOT}/platform-tools:${ANDROID_SDK_ROOT}/emulator
 
 # Install system dependencies
@@ -23,6 +25,7 @@ RUN apt-get update && apt-get install -y \
     wget \
     curl \
     git \
+    openjdk-11-jdk \
     # Required libraries for Android SDK
     libc6 \
     libstdc++6 \
@@ -45,6 +48,10 @@ RUN apt-get update && apt-get install -y \
     libasound2 \
     # Cleanup
     && rm -rf /var/lib/apt/lists/*
+
+# Normalize the Java 11 location so Gradle toolchains work on both amd64 and arm64 images
+RUN ln -s "$(dirname "$(dirname "$(readlink -f "$(command -v javac)")")")" /opt/java17 && \
+    ln -s /usr/lib/jvm/java-11-openjdk-* /opt/java11
 
 # Download and install Android command line tools
 RUN mkdir -p ${ANDROID_SDK_ROOT}/cmdline-tools && \

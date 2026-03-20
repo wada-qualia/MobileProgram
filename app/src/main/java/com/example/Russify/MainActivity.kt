@@ -17,6 +17,7 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -27,13 +28,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.runtime.rememberCoroutineScope
 import com.example.Russify.data.MusicRepository
+import com.example.Russify.data.local.TokenManager
+import com.example.Russify.data.repository.AuthRepository
 import com.example.Russify.model.Playlist
 import com.example.Russify.presentation.components.AddToPlaylistDialog
 import com.example.Russify.presentation.components.CreatePlaylistDialog
 import com.example.Russify.presentation.screens.*
 import com.example.Russify.presentation.state.MusicPlayerState
 import com.example.Russify.ui.theme.JopaPisunTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,21 +46,63 @@ class MainActivity : ComponentActivity() {
         setContent {
             val context = LocalContext.current
             val playerState = remember { MusicPlayerState(context) }
+            val tokenManager = remember { TokenManager.getInstance(context) }
+            val authRepository = remember { AuthRepository(tokenManager) }
+            val coroutineScope = rememberCoroutineScope()
             var currentScreen by remember { mutableIntStateOf(0) }
-            var isAuthenticated by remember { mutableStateOf(false) }
+            var isAuthenticated by remember { mutableStateOf(tokenManager.isLoggedIn()) }
 
+            // Функция logout
+            val handleLogout: () -> Unit = {
+                coroutineScope.launch {
+                    // Вызываем logout на backend (необязательно дожидаться результата)
+                    authRepository.logout()
 
-            LaunchedEffect(Unit) {
-                playerState.allTracks = MusicRepository.loadTracksFromServer()
-                playerState.playlists = MusicRepository.getPlaylists()
-                playerState.albums = MusicRepository.getAlbums()
+                    // Очищаем локальные данные
+                    tokenManager.clear()
+
+                    // Обновляем UI
+                    isAuthenticated = false
+
+                    // Очищаем треки и плейлисты
+                    playerState.closeMiniPlayer()
+                    playerState.allTracks = emptyList()
+                    playerState.playlists = emptyList()
+                    playerState.albums = emptyList()
+                    playerState.currentTrack = null
+                    playerState.currentQueue = emptyList()
+                    playerState.playerErrorMessage = null
+                }
             }
 
+            LaunchedEffect(isAuthenticated) {
+                tokenManager.initializeApiClient()
+
+                if (isAuthenticated) {
+                    playerState.playerErrorMessage = null
+                    playerState.allTracks = MusicRepository.loadTracksFromServer()
+                    playerState.playlists = MusicRepository.loadPlaylistsFromServer()
+                    playerState.albums = MusicRepository.loadAlbumsFromServer()
+                } else {
+                    playerState.allTracks = emptyList()
+                    playerState.playlists = emptyList()
+                    playerState.albums = emptyList()
+                }
+            }
+
+            DisposableEffect(playerState) {
+                onDispose {
+                    playerState.release()
+                }
+            }
 
             JopaPisunTheme(useOceanTheme = playerState.useOceanTheme) {
                 if (!isAuthenticated) {
                     AuthScreen(
-                        onAuthSuccess = { isAuthenticated = true },
+                        onAuthSuccess = {
+                            currentScreen = 0
+                            isAuthenticated = true
+                        },
                         playerState = playerState
                     )
                     return@JopaPisunTheme
@@ -103,11 +150,11 @@ class MainActivity : ComponentActivity() {
                             1 -> FavoritesScreen(playerState = playerState, context = context)
                             2 -> SettingsScreen(
                                 playerState = playerState,
-                                onLogout = { isAuthenticated = false },
-                                onChangeAccount = { isAuthenticated = false }
+                                onLogout = handleLogout,
+                                onChangeAccount = handleLogout
                             )
                             3 -> ProfileScreen(
-                                onLogout = { isAuthenticated = false },
+                                onLogout = handleLogout,
                                 playerState = playerState
                             )
                         }

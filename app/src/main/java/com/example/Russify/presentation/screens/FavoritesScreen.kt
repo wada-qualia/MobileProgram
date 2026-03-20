@@ -59,10 +59,6 @@ fun FavoritesScreen(
         BackHandler { isShowingAlbums = false }
     }
 
-    val initialFavoriteTrackIds = remember(playerState.allTracks.size) {
-        playerState.allTracks.filter { it.isFavorite }.map { it.id }.toSet()
-    }
-
     val allTracks = playerState.allTracks
     val userPlaylists = playerState.playlists
     val userAlbums = playerState.albums
@@ -70,14 +66,11 @@ fun FavoritesScreen(
     val filteredPlaylists = userPlaylists.filter { it.title.contains(searchQuery, ignoreCase = true) }
     val filteredAlbums = userAlbums.filter { it.title.contains(searchQuery, ignoreCase = true) }
     val filteredTracks = allTracks.filter {
-        initialFavoriteTrackIds.contains(it.id) &&
-                (it.title.contains(searchQuery, ignoreCase = true) || it.artist.contains(searchQuery, ignoreCase = true))
+        it.isFavorite &&
+            (it.title.contains(searchQuery, ignoreCase = true) || it.artist.contains(searchQuery, ignoreCase = true))
     }
 
-    val displayTracks = remember(filteredTracks, allTracks) {
-        val allTracksMap = allTracks.associateBy { it.id }
-        filteredTracks.map { track -> allTracksMap[track.id] ?: track }
-    }
+    val displayTracks = remember(filteredTracks) { filteredTracks }
 
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -128,7 +121,11 @@ fun FavoritesScreen(
                         } else {
                             items(items = displayTracks, key = { it.id }) { actualTrack ->
                                 TrackRowItem(
-                                    track = actualTrack, onClick = { playerState.playTrack(actualTrack, PlayingContext.AllTracks); playerState.isPlayerExpanded = true },
+                                    track = actualTrack,
+                                    onClick = {
+                                        playerState.playTrack(actualTrack, PlayingContext.AllTracks, displayTracks)
+                                        playerState.isPlayerExpanded = true
+                                    },
                                     onToggleFavorite = { playerState.toggleFavorite(actualTrack) }, onAddToPlaylist = { playerState.openAddToPlaylistDialog(actualTrack) },
                                     onAddToQueue = { playerState.addToQueue(actualTrack) }, onPlayNext = { playerState.playNext(actualTrack) }, language = language, playerState = playerState
                                 )

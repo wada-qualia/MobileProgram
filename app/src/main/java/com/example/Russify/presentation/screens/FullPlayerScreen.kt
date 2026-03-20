@@ -35,7 +35,6 @@ fun FullPlayerScreen(
     playerState: MusicPlayerState
 ) {
     val track = playerState.currentTrack ?: return
-    var sliderPosition by remember { mutableFloatStateOf(0.3f) }
     var navigationDirection by remember { mutableIntStateOf(0) }
 
     BackHandler(enabled = playerState.isPlayerExpanded) {
@@ -135,12 +134,21 @@ fun FullPlayerScreen(
                 is PlayingContext.PlaylistContext -> if (playerState.currentLanguage == com.example.Russify.presentation.state.AppLanguage.RU) "Плейлист: ${ctx.name}" else "Playlist: ${ctx.name}"
             }
             Text(contextText, fontSize = 14.sp, color = themeTextColor.copy(alpha = 0.5f))
+
+            playerState.playerErrorMessage?.let { message ->
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = message,
+                    fontSize = 13.sp,
+                    color = Color(0xFFFFCDD2)
+                )
+            }
         }
 
         Column(modifier = Modifier.fillMaxWidth()) {
             Slider(
-                value = sliderPosition,
-                onValueChange = { sliderPosition = it },
+                value = playerState.progressFraction,
+                onValueChange = { playerState.seekToFraction(it) },
                 thumb = { Box(modifier = Modifier.size(16.dp).background(themeIconColor, CircleShape)) },
                 track = { s ->
                     SliderDefaults.Track(
@@ -154,9 +162,8 @@ fun FullPlayerScreen(
                 }
             )
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text("01:23", fontSize = 12.sp, color = themeTextColor)
-                // ИСПРАВЛЕНО ТУТ: track.duration -> track.durationFormatted
-                Text(track.durationFormatted, fontSize = 12.sp, color = themeTextColor)
+                Text(playerState.currentPositionFormatted, fontSize = 12.sp, color = themeTextColor)
+                Text(playerState.currentDurationFormatted, fontSize = 12.sp, color = themeTextColor)
             }
         }
 
@@ -208,13 +215,13 @@ fun FullPlayerScreen(
             }
 
             AnimatedContent(
-                targetState = track.isFavorite,
+                targetState = playerState.currentTrack?.isFavorite == true,
                 transitionSpec = {
                     fadeIn() togetherWith fadeOut()
                 },
                 label = "LikeAnim"
             ) { isFavorite ->
-                IconButton(onClick = { playerState.toggleFavorite(track) }) {
+                IconButton(onClick = { playerState.currentTrack?.let(playerState::toggleFavorite) }) {
                     Icon(
                         if(isFavorite) Icons.Default.Favorite else Icons.Outlined.FavoriteBorder,
                         "Like",
