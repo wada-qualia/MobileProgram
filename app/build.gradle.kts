@@ -127,6 +127,7 @@ kotlin {
 }
 
 dependencies {
+    implementation("androidx.core:core-splashscreen:1.0.1")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -149,17 +150,11 @@ dependencies {
     implementation("com.google.code.gson:gson:2.10.1")
     val ktorVersion = "2.3.8"
     implementation("io.ktor:ktor-client-core:$ktorVersion")
-    implementation("io.ktor:ktor-client-android:$ktorVersion") // Движок для Android
+    implementation("io.ktor:ktor-client-android:$ktorVersion")
     implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
     implementation("io.ktor:ktor-client-logging:$ktorVersion")
-    implementation("io.ktor:ktor-client-auth:$ktorVersion") // Аутентификация
-
-    // --- СЕРИАЛИЗАЦИЯ (Для парсинга JSON) ---
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
-    implementation("org.slf4j:slf4j-nop:1.7.36")
-
-    // --- MEDIA3 / EXOPLAYER (Для ВОСПРОИЗВЕДЕНИЯ музыки) ---
     val media3Version = "1.2.1"
     implementation("androidx.media3:media3-exoplayer:$media3Version")
     implementation("androidx.media3:media3-common:$media3Version")
