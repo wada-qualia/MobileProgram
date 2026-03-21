@@ -7,6 +7,10 @@ plugins {
 // Get version from parent project (set by version.gradle.kts)
 val appVersionName: String = rootProject.extra.get("versionName") as String
 val appVersionCode: Int = rootProject.extra.get("versionCode") as Int
+val devBaseUrl = providers.gradleProperty("russifyDevBaseUrl")
+    .orElse(providers.environmentVariable("RUSSIFY_DEV_BASE_URL"))
+    .orElse("http://192.168.0.49:8080")
+    .get()
 
 android {
     namespace = "com.example.Russify"
@@ -42,7 +46,7 @@ android {
             versionNameSuffix = "-dev"
 
             // BuildConfig для dev окружения
-            buildConfigField("String", "BASE_URL", "\"http://192.168.0.49:8080\"")
+            buildConfigField("String", "BASE_URL", "\"$devBaseUrl\"")
             buildConfigField("String", "ENVIRONMENT", "\"development\"")
             buildConfigField("boolean", "ENABLE_LOGGING", "true")
 

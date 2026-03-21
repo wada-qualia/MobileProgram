@@ -46,7 +46,7 @@ object MusicRepository {
      */
     suspend fun loadTracksFromServer(): List<Track> {
         return try {
-            val response = client.get("/tracks")
+            val response = client.get("tracks")
 
             if (response.status == HttpStatusCode.OK) {
                 val dtoList: List<TrackDto> = response.body()
@@ -129,7 +129,7 @@ object MusicRepository {
 
     suspend fun loadAlbumsFromServer(): List<Album> {
         return try {
-            val albumDtos: List<com.example.Russify.data.network.AlbumDto> = client.get("/albums").body()
+            val albumDtos: List<com.example.Russify.data.network.AlbumDto> = client.get("albums").body()
 
             albumDtos.map { dto ->
                 Album(
